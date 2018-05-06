@@ -2,11 +2,28 @@ import psycopg2
 from django.shortcuts import render
 from django.http import JsonResponse
 
+def all_names(request):
+    with psycopg2.connect(host="127.0.0.1",
+                          user="postgres",
+                          password="postgres",
+                          dbname="local_elections") as conn:
+        c = conn.cursor()
+        c.execute(
+            """
+            select id, filer_name from committees_list
+            """
+        )
+        res = c.fetchall()
+        # res_clean = res[0][0]
+        print(res)
+        return JsonResponse({
+            "msg": res
+        })
 
 def total_contributions(request):
     test = 16423
-    with psycopg2.connect(host="127.0.0.1", 
-                          user="postgres", 
+    with psycopg2.connect(host="127.0.0.1",
+                          user="postgres",
                           password="postgres",
                           dbname="local_elections") as conn:
         c = conn.cursor()
@@ -18,11 +35,11 @@ def total_contributions(request):
             group by t.committee_id;
             """, {"id": test}
         )
+        res = c.fetchall()
         if res:
-            res = c.fetchall()[0][0]
-            print(res)
+            res_clean = res[0][0]
+            print(res_clean)
             return JsonResponse({
-                "msg": res,
+                "msg": res_clean,
             })
         # catch case where we don't have a result with a HTTP 404
-    
