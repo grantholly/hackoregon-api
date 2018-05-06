@@ -67,8 +67,7 @@ def total_expenditures(request, cid):
             })
         # catch case where we don't have a result with a HTTP 404
 
-def top_donors(request, cid):
-    test = 16423
+def contribution_count(request, cid):
     with psycopg2.connect(host="127.0.0.1",
                           user="postgres",
                           password="postgres",
