@@ -113,7 +113,6 @@ def top_donors(request, cid):
             })
 
 def spending_categories(request, cid):
-    test = 16423
     with psycopg2.connect(host="127.0.0.1",
                           user="postgres",
                           password="postgres",
@@ -156,4 +155,27 @@ def top_zip_codes(request, cid):
         if res:
             return JsonResponse({
                 "msg": res,
+            })
+
+def donor_categories(request, cid):
+    test = 16423
+    with psycopg2.connect(host="127.0.0.1",
+                          user="postgres",
+                          password="postgres",
+                          dbname="local_elections") as conn:
+        c = conn.cursor()
+        c.execute(
+            """
+            select td.address_book_type, sum(1) from transactions t left join transaction_details td using(transaction_id)
+            where t.committee_id = %(id)s and td.transaction_type = 'Contribution'
+            group by td.address_book_type
+            order by sum(1) desc
+            """,{"id": cid}
+        )
+        res = c.fetchall()
+        if res:
+            res_clean = res
+            print(res_clean)
+            return JsonResponse({
+                "msg": res_clean,
             })
